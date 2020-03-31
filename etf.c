@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 
         fclose(fp);
         if(remove(argv[1]) != 0) puts("[-] couldn't delete input file, delete manually to ensure only crypted data remains");
-        if(fwrite(outstr, sizeof(char), size, fout) > 0) printf("[+] success, wrote crypted data to %s\n", path);
+        if(fwrite(outstr, sizeof(char), strlen(outstr), fout) > 0) printf("[+] success, wrote crypted data to %s\n", path);
         fclose(fout);
         exit(0);
 
