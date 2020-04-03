@@ -9,11 +9,7 @@ char* cryptData(char* data, int size, int c, char* key)
     for(int i = 0; i < size; i++)
     {
         if(data[i] != '\n' && data[i] != '\0')
-            switch(c)
-            {
-                case 1: data[i] = data[i] + key[i % keylen]; break;
-                case 0: data[i] = data[i] - key[i % keylen]; break;
-            }
+            data[i] = data[i] + (c ? key[i % keylen] : -key[i % keylen]);
     }
     return data;
 }
@@ -35,8 +31,7 @@ int main(int argc, char* argv[])
         fread(outstr, sizeof(char), size, fp);
         cryptData(outstr, size, atoi(argv[2]), argv[3]);
 
-        char* path = calloc(strlen(argv[1]), sizeof(char));
-        strcat(path, argv[1]);
+        char* path = strdup(argv[1]);
         FILE* fout;
         switch(atoi(argv[2]))
         {
