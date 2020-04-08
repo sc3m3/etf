@@ -3,17 +3,6 @@
 #include <string.h>
 #include <unistd.h>
 
-char* cryptData(char* data, int size, int c, char* key)
-{
-    int keylen = strlen(key);
-    for(int i = 0; i < size; i++)
-    {
-        if(data[i] != '\n' && data[i] != '\0')
-            data[i] = data[i] + (c ? key[i % keylen] : -key[i % keylen]);
-    }
-    return data;
-}
-
 int main(int argc, char* argv[])
 {   
     int n;
@@ -29,7 +18,12 @@ int main(int argc, char* argv[])
 
         char* outstr = calloc(size, sizeof(char));
         fread(outstr, sizeof(char), size, fp);
-        cryptData(outstr, size, atoi(argv[2]), argv[3]);
+
+        int keylen = strlen(argv[3]);
+        for(int i = 0; i < strlen(outstr); i++)
+        {
+            outstr[i] = outstr[i] + (atoi(argv[2]) ? argv[3][i % keylen] : -argv[3][i % keylen]);
+        }
 
         char* path = strdup(argv[1]);
         FILE* fout;
@@ -37,15 +31,14 @@ int main(int argc, char* argv[])
         {
             case 1:
                 strcat(path, ".etfc");
-                fout = fopen(path, "w+");
                 break;
             case 0:
-                path[strlen(path) - 5] = '\0';
-                fout = fopen(path, "w+");
-                break;
-            default: puts("[-] highly unexpected error\nhow did you manage to get here?"); exit(0);
+                path[strlen(path) - 5] = '\0'; break;
+            default:
+                puts("[-] highly unexpected error\nhow did you manage to get here?"); exit(0);
         }
 
+        fout = fopen(path, "w+");
         fclose(fp);
         if(remove(argv[1]) != 0) puts("[-] couldn't delete input file, delete manually to ensure only crypted data remains");
         if(fwrite(outstr, sizeof(char), strlen(outstr), fout) > 0) printf("[+] success, wrote crypted data to %s\n", path);
