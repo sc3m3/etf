@@ -5,8 +5,8 @@
 
 int main(int argc, char* argv[])
 {   
-    int n;
-    if(argc == 4 && access(argv[1], F_OK | R_OK) != -1 && sscanf(argv[2], "%d", &n) == 1 && atoi(argv[2]) >= 0 && atoi(argv[2]) < 2 && strlen(argv[3]) > 0)
+    int c;
+    if(argc == 4 && access(argv[1], F_OK | R_OK) != -1 && sscanf(argv[2], "%d", &c) == 1 && c >= 0 && c < 2 && strlen(argv[3]) > 0)
     {
         puts("\netf - encrypt text file\ncreds: sc3m3 aka kolya aka god aka one true and only god of this reality\n\n");
 
@@ -22,12 +22,13 @@ int main(int argc, char* argv[])
         int keylen = strlen(argv[3]);
         for(int i = 0; i < strlen(outstr); i++)
         {
-            outstr[i] = outstr[i] + (atoi(argv[2]) ? argv[3][i % keylen] : -argv[3][i % keylen]);
+            outstr[i] = outstr[i] + (c ? argv[3][i % keylen] : -argv[3][i % keylen]);
         }
 
-        char* path = strdup(argv[1]);
+        char* path = calloc(strlen(argv[1]) + (c ? 6 : 1), sizeof(char));
+        strcat(path, argv[1]);
         FILE* fout;
-        switch(atoi(argv[2]))
+        switch(c)
         {
             case 1:
                 strcat(path, ".etfc");
@@ -35,7 +36,7 @@ int main(int argc, char* argv[])
             case 0:
                 path[strlen(path) - 5] = '\0'; break;
             default:
-                puts("[-] highly unexpected error\nhow did you manage to get here?"); exit(0);
+                puts("[-] highly unexpected error\nhow did you manage to get here?"); exit(1);
         }
 
         fout = fopen(path, "w+");
